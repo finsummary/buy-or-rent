@@ -3,6 +3,12 @@
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useEffect } from "react"
 
+declare global {
+  interface Window {
+    gtag: (...args: any[]) => void;
+  }
+}
+
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const pageview = (url: string) => {

@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { scenarios } from '@/lib/db/schema'
 
 export async function GET() {
   try {
-    // Test database connection
-    await db.select().limit(1)
+    // Test database connection by selecting from a table
+    await db.select().from(scenarios).limit(1)
     
     return NextResponse.json({
       status: 'healthy',

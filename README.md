@@ -1,36 +1,179 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏠 BuyOrRent.io - Buy vs Rent Calculator
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+![BuyOrRent.io](https://img.shields.io/badge/BuyOrRent.io-Calculator-blue?style=for-the-badge)
+![Next.js](https://img.shields.io/badge/Next.js-15+-black?style=for-the-badge&logo=next.js)
+![Supabase](https://img.shields.io/badge/Supabase-Auth-green?style=for-the-badge&logo=supabase)
+![TypeScript](https://img.shields.io/badge/TypeScript-blue?style=for-the-badge&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-CSS-blue?style=for-the-badge&logo=tailwindcss)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+**Make informed decisions about homeownership vs renting with our comprehensive financial calculator**
+
+[🚀 Live Demo](https://buyorrent.io) | [📖 Documentation](#features) | [🐳 Deployment](#deployment)
+
+</div>
+
+## ✨ Features
+
+### 💰 **Advanced Financial Calculator**
+- **Comprehensive Cost Analysis**: Includes mortgage, maintenance, insurance, closing costs
+- **Investment Comparison**: Compares property equity vs rental savings invested
+- **Time Horizon Analysis**: Calculate over any time period (1-30+ years)
+- **Real-time Updates**: Instant recalculation as you adjust parameters
+
+### 📊 **Rich Data Visualization**
+- **Interactive Charts**: Line charts showing homeowner equity vs renter investment over time
+- **Yearly Breakdown Table**: Detailed year-by-year financial analysis
+- **Monthly Payment Tracking**: Compare monthly costs between buying and renting
+- **Trend Analysis**: See when buying becomes more advantageous than renting
+
+### 👤 **User Account System**
+- **Supabase Authentication**: Secure OAuth with Google or GitHub
+- **Scenario Management**: Save and compare multiple calculation scenarios
+- **Guest Mode**: Full functionality without requiring an account
+- **Data Security**: Row Level Security ensures data privacy
+
+### 📱 **Modern User Experience**
+- **Responsive Design**: Optimized for desktop, tablet, and mobile
+- **Clean Interface**: Modern UI with shadcn/ui components
+- **Fast Loading**: Optimized for Core Web Vitals
+- **Accessibility**: WCAG 2.1 AA compliant
+
+## 🛠 Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| **Frontend** | Next.js 15+, React 19, TypeScript |
+| **Styling** | Tailwind CSS, shadcn/ui, Framer Motion |
+| **Charts** | Recharts, Custom visualizations |
+| **Authentication** | Supabase Auth, OAuth (Google, GitHub) |
+| **Database** | PostgreSQL, Supabase, Drizzle ORM |
+| **Forms** | React Hook Form, Zod validation |
+| **Analytics** | Google Analytics 4 |
+| **Deployment** | Docker, Vercel, Railway |
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ and npm
+- Git
+
+### Installation
+
+1. **Clone and install**
+   ```bash
+   git clone <repository-url>
+   cd calculator
+   npm install
+   ```
+
+2. **Environment setup**
+   ```bash
+   cp env.example .env.local
+   # Edit .env.local with your configuration
+   ```
+
+3. **Supabase setup**
+   ```bash
+   # Follow SUPABASE_SETUP.md for detailed instructions
+   npm run db:push
+   ```
+
+4. **Start development**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open application**
+   Visit `http://localhost:3000`
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+```env
+# Supabase Configuration
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+
+# Database
+DATABASE_URL=postgresql://postgres.xxx:password@aws-0-region.pooler.supabase.com:6543/postgres
+
+# Site Configuration
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
+
+# Analytics (Optional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+See `SUPABASE_SETUP.md` for detailed setup instructions.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📊 Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Basic Calculator
+1. **Enter home details**: Price, down payment, mortgage rate
+2. **Set time horizon**: How long you plan to stay
+3. **Add costs**: Closing costs, maintenance, insurance
+4. **Compare rental**: Monthly rent, rent increases
+5. **Review results**: See recommendation and detailed breakdown
 
-## Learn More
+### Advanced Features
+- **Save scenarios**: Create account to save multiple calculations
+- **Compare options**: Side-by-side scenario comparison
+- **Export data**: Download calculations for external analysis
+- **Share results**: Generate shareable links
 
-To learn more about Next.js, take a look at the following resources:
+## 🐳 Deployment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Docker Deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Build and run
+docker build -t buyorrent-app .
+docker run -d -p 3000:3000 --env-file .env.production buyorrent-app
 
-## Deploy on Vercel
+# Or use Docker Compose
+docker-compose up -d
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed deployment instructions with your buyorrent.io domain.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
+| `npm run db:generate` | Generate database schema |
+| `npm run db:push` | Push schema to Supabase |
+| `npm run db:studio` | Open Drizzle Studio |
+
+## 🤝 Contributing
+
+We welcome contributions! 
+
+### Development Workflow
+
+1. **Fork** the repository
+2. **Create** feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** changes: `git commit -m 'Add amazing feature'`
+4. **Push** to branch: `git push origin feature/amazing-feature`
+5. **Open** Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+<div align="center">
+
+**Built with ❤️ for better financial decisions**
+
+[Website](https://buyorrent.io) • [Issues](issues) • [Discussions](discussions)
+
+</div>

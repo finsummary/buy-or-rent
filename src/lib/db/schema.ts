@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, uuid, jsonb, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, text, timestamp, uuid, jsonb } from "drizzle-orm/pg-core"
 
 // Supabase handles auth.users automatically, we just reference it
 // Our application tables

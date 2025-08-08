@@ -30,7 +30,7 @@ export function calculateBuyVsRent(inputs: CalculatorInputs): CalculationResults
   
   // Calculate closing costs
   const closingCosts = inputs.homePrice * (inputs.closingCosts / 100);
-  const totalInitialCost = downPayment + closingCosts;
+  // const totalInitialCost = downPayment + closingCosts; // This variable is not used
   
   // Calculate monthly mortgage payment
   const monthlyMortgagePayment = calculateMonthlyMortgagePayment(

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { signOut } from "@/app/auth/actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -68,9 +69,11 @@ export function UserMenu({ onSaveScenario }: UserMenuProps) {
         <div className="flex items-center justify-between space-x-3">
           <div className="flex items-center space-x-3">
             {user.user_metadata?.avatar_url && (
-              <img 
-                src={user.user_metadata.avatar_url} 
-                alt={user.user_metadata?.full_name || 'User'} 
+              <Image
+                src={user.user_metadata.avatar_url}
+                alt={user.user_metadata?.full_name || 'User'}
+                width={32}
+                height={32}
                 className="h-8 w-8 rounded-full"
               />
             )}

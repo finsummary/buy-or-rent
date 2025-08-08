@@ -367,7 +367,7 @@ const BuyOrRentCalculator = () => {
                     <span className="font-medium">{formatCurrency(results.monthlyMortgagePayment)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                    <span>Owner's Total Monthly:</span>
+                    <span>Owner&apos;s Total Monthly:</span>
                     <span className="font-medium">{formatCurrency(results.ownerMonthlyPayment)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
@@ -420,7 +420,7 @@ const BuyOrRentCalculator = () => {
                   Wealth Comparison Over Time
                 </CardTitle>
                 <CardDescription>
-                  Homeowner's equity vs renter's investment over {inputs.timeHorizon} years
+                  Homeowner&apos;s equity vs renter&apos;s investment over {inputs.timeHorizon} years
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -454,7 +454,7 @@ const BuyOrRentCalculator = () => {
                         dataKey="homeownerEquity" 
                         stroke="#10b981" 
                         strokeWidth={3}
-                        name="Homeowner's Equity"
+                        name="Homeowner&apos;s Equity"
                         dot={{ fill: '#10b981', strokeWidth: 2, r: 4 }}
                       />
                       <Line 
@@ -462,7 +462,7 @@ const BuyOrRentCalculator = () => {
                         dataKey="totalRenterInvestment" 
                         stroke="#3b82f6" 
                         strokeWidth={3}
-                        name="Renter's Investment"
+                        name="Renter&apos;s Investment"
                         dot={{ fill: '#3b82f6', strokeWidth: 2, r: 4 }}
                       />
                     </LineChart>

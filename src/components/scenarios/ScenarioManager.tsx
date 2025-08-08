@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, Upload, Trash2, User, LogIn, Calendar } from 'lucide-react';
+import { Save, Trash2, User, LogIn, Calendar } from 'lucide-react';
 import { CalculatorInputs } from '@/types/calculator';
 import { useScenarios } from '@/hooks/useScenarios';
 import { formatCurrency } from '@/lib/calculator';
@@ -18,7 +18,7 @@ interface ScenarioManagerProps {
 
 export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManagerProps) {
   const { scenarios, loading, saveScenario, deleteScenario, isAuthenticated } = useScenarios();
-  const [saveDialogOpen, setSaveDialogOpen] = useState(false);
+  // const [saveDialogOpen, setSaveDialogOpen] = useState(false); // This state is not used
   const [scenarioName, setScenarioName] = useState('');
   const [scenarioDescription, setScenarioDescription] = useState('');
   const [saving, setSaving] = useState(false);
@@ -31,7 +31,7 @@ export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManag
       await saveScenario(scenarioName, currentInputs, scenarioDescription);
       setScenarioName('');
       setScenarioDescription('');
-      setSaveDialogOpen(false);
+      // setSaveDialogOpen(false); // This was part of the unused state
     } catch (error) {
       console.error('Failed to save scenario:', error);
     } finally {

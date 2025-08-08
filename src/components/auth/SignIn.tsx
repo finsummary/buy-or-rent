@@ -3,7 +3,7 @@
 import { signInWithOAuth } from "@/app/auth/actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Github, Chrome, AlertTriangle } from "lucide-react"
+import { Github, Chrome } from "lucide-react"
 import { useState } from "react"
 import { useSearchParams } from "next/navigation"
 

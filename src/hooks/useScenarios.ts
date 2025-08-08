@@ -45,7 +45,7 @@ export function useScenarios() {
     return () => {
       authListener.subscription.unsubscribe();
     };
-  }, []);
+  }, [supabase.auth]);
 
   const loadScenarios = async (currentUser: User) => {
     if (!currentUser) return;

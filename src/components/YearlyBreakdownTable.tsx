@@ -3,7 +3,7 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Calendar, TrendingUp } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 import { YearlyData } from '@/types/calculator';
 import { formatCurrency } from '@/lib/calculator';
 
@@ -94,7 +94,7 @@ export function YearlyBreakdownTable({ yearlyData }: YearlyBreakdownTableProps) 
           <p><strong>Property Value:</strong> Home value with appreciation</p>
           <p><strong>Homeowner Equity:</strong> Property value minus remaining mortgage balance</p>
           <p><strong>Monthly Rent:</strong> Current rental payment (increases each year)</p>
-          <p><strong>Monthly Difference:</strong> Owner's payment - Rent (<span className="text-red-600">Red = Owner pays more</span>, <span className="text-green-600">Green = Renter pays more</span>)</p>
+          <p><strong>Monthly Difference:</strong> Owner&apos;s payment - Rent (<span className="text-red-600">Red = Owner pays more</span>, <span className="text-green-600">Green = Renter pays more</span>)</p>
           <p><strong>Down Payment Investment:</strong> Initial down payment + closing costs invested at market rate</p>
           <p><strong>Accumulated Savings:</strong> Monthly savings invested with annual compounding</p>
           <p><strong>Total Renter Investment:</strong> Down Payment Investment + Accumulated Savings</p>

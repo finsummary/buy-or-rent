@@ -65,38 +65,38 @@ const BuyOrRentCalculator = () => {
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-7xl">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex justify-between items-start mb-4">
-            <div className="flex-1 flex justify-start">
-              <div className="flex items-center gap-2 text-2xl font-bold text-blue-600">
-                <Home className="h-6 w-6" />
-                <span>BuyOrRent.io</span>
-              </div>
-            </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold flex items-center justify-center gap-3">
-              <Calculator className="h-8 w-8 sm:h-10 sm:w-10" />
+        <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
+          <div className="flex items-center gap-2 text-2xl font-bold text-blue-600">
+            <Home className="h-6 w-6" />
+            <span>BuyOrRent.io</span>
+          </div>
+          <div className="flex-grow text-center">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center justify-center gap-2">
+              <Calculator className="h-7 w-7 sm:h-8 sm:w-8" />
               Buy vs Rent Calculator
             </h1>
-            <div className="flex-1 flex justify-end">
-              <UserMenu />
-            </div>
+            <p className="text-base sm:text-lg text-muted-foreground mt-1">
+              Make informed decisions about homeownership vs renting
+            </p>
           </div>
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto">
-            Make informed decisions about homeownership vs renting
-          </p>
-        </div>
+          <div className="flex-shrink-0">
+            <UserMenu />
+          </div>
+        </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-5 mb-6">
-            <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
-            <TabsTrigger value="results">Results & Analysis</TabsTrigger>
-            <TabsTrigger value="chart">Comparison Chart</TabsTrigger>
-            <TabsTrigger value="table">Yearly Breakdown</TabsTrigger>
-            <TabsTrigger value="scenarios">
-              <User className="h-4 w-4 mr-1" />
-              Scenarios
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto pb-2">
+            <TabsList className="grid grid-flow-col auto-cols-max sm:grid-cols-5 sm:w-full gap-2">
+              <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
+              <TabsTrigger value="results">Results & Analysis</TabsTrigger>
+              <TabsTrigger value="chart">Comparison Chart</TabsTrigger>
+              <TabsTrigger value="table">Yearly Breakdown</TabsTrigger>
+              <TabsTrigger value="scenarios">
+                <User className="h-4 w-4 mr-1" />
+                Scenarios
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="inputs">
             <div className="grid gap-6 lg:grid-cols-2">

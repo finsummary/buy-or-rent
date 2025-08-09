@@ -85,7 +85,7 @@ const BuyOrRentCalculator = () => {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid h-auto w-full grid-cols-3 sm:grid-cols-5 mb-6">
+          <TabsList className="h-auto flex flex-wrap justify-center mb-6">
             <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
             <TabsTrigger value="results">Results & Analysis</TabsTrigger>
             <TabsTrigger value="chart">Comparison Chart</TabsTrigger>

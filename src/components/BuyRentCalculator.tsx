@@ -85,18 +85,16 @@ const BuyOrRentCalculator = () => {
         </header>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="overflow-x-auto pb-2">
-            <TabsList className="grid grid-flow-col auto-cols-max sm:grid-cols-5 sm:w-full gap-2">
-              <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
-              <TabsTrigger value="results">Results & Analysis</TabsTrigger>
-              <TabsTrigger value="chart">Comparison Chart</TabsTrigger>
-              <TabsTrigger value="table">Yearly Breakdown</TabsTrigger>
-              <TabsTrigger value="scenarios">
-                <User className="h-4 w-4 mr-1" />
-                Scenarios
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="grid h-auto w-full grid-cols-3 sm:grid-cols-5 mb-6">
+            <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
+            <TabsTrigger value="results">Results & Analysis</TabsTrigger>
+            <TabsTrigger value="chart">Comparison Chart</TabsTrigger>
+            <TabsTrigger value="table">Yearly Breakdown</TabsTrigger>
+            <TabsTrigger value="scenarios">
+              <User className="h-4 w-4 mr-1" />
+              Scenarios
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="inputs">
             <div className="grid gap-6 lg:grid-cols-2">

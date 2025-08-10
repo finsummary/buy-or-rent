@@ -44,7 +44,14 @@ const BuyOrRentCalculator = () => {
   };
 
   const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
-    let processedValue = field === 'downPaymentType' ? value : (typeof value === 'string' ? parseFloat(value) || 0 : value);
+    let processedValue: string | number;
+
+    if (field === 'downPaymentType') {
+      processedValue = value;
+    } else {
+      const parsed = parseFloat(value.toString());
+      processedValue = isNaN(parsed) ? 0 : parsed;
+    }
     
     // Limit down payment percentage to 0-100%
     if (field === 'downPaymentPercentage' && typeof processedValue === 'number') {

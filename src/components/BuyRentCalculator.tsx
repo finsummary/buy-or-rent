@@ -58,27 +58,36 @@ const BuyOrRentCalculator = () => {
       }
       return;
     }
+
+    // Allow the field to be completely empty
+    if (value === '') {
+      setInputs(prev => ({ ...prev, [field]: '' }));
+      return;
+    }
+
+    // Regex to allow only valid numeric/decimal patterns
+    const validNumericRegex = /^[0-9]*\.?[0-9]*$/;
+    if (!validNumericRegex.test(value)) {
+      // If invalid characters are typed, ignore the change
+      return;
+    }
     
-    // Sanitize input to allow only numbers and a single decimal point
-    let sanitizedValue = value.replace(/[^0-9.]/g, '');
-    const parts = sanitizedValue.split('.');
-    if (parts.length > 2) {
-      sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
-    }
+    let finalValue = value;
 
-    // Prevent leading zeros unless it's a decimal like "0."
-    if (sanitizedValue.length > 1 && sanitizedValue.startsWith('0') && !sanitizedValue.startsWith('0.')) {
-      sanitizedValue = sanitizedValue.substring(1);
+    // Remove leading zeros for whole numbers (e.g., '05' -> '5')
+    // but allow them for decimals starting with zero (e.g., '0.5')
+    if (!finalValue.includes('.')) {
+      finalValue = String(Number(finalValue));
     }
-
+    
+    // For the percentage field, cap the value at 100
     if (field === 'downPaymentPercentage') {
-        const numericValue = Number(sanitizedValue);
-        if (numericValue > 100) {
-            sanitizedValue = '100';
-        }
+      if (Number(finalValue) > 100) {
+        finalValue = '100';
+      }
     }
-
-    setInputs(prev => ({ ...prev, [field]: sanitizedValue }));
+    
+    setInputs(prev => ({ ...prev, [field]: finalValue }));
   };
 
   const downPaymentAmount = useMemo(() => {

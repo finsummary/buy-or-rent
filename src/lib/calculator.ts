@@ -20,32 +20,44 @@ export function calculateMonthlyMortgagePayment(
 }
 
 export function calculateBuyVsRent(inputs: CalculatorInputs): CalculationResults {
+  // Parse all string inputs into numbers, defaulting to 0 if invalid
+  const numericInputs = Object.fromEntries(
+    Object.entries(inputs).map(([key, value]) => {
+      if (key === 'downPaymentType') {
+        return [key, value];
+      }
+      const parsed = Number(value);
+      return [key, isNaN(parsed) ? 0 : parsed];
+    })
+  ) as Omit<CalculatorInputs, 'downPaymentType'> & { downPaymentType: 'percentage' | 'amount' };
+
+
   // Calculate down payment amount
   const downPayment = inputs.downPaymentType === 'percentage' 
-    ? inputs.homePrice * (inputs.downPaymentPercentage / 100)
-    : inputs.downPaymentAmount;
+    ? numericInputs.homePrice * (numericInputs.downPaymentPercentage / 100)
+    : numericInputs.downPaymentAmount;
   
   // Calculate loan amount
-  const loanAmount = inputs.homePrice - downPayment;
+  const loanAmount = numericInputs.homePrice - downPayment;
   
   // Calculate closing costs
-  const closingCosts = inputs.homePrice * (inputs.closingCosts / 100);
+  const closingCosts = numericInputs.homePrice * (numericInputs.closingCosts / 100);
   
   // Calculate monthly mortgage payment
   const monthlyMortgagePayment = calculateMonthlyMortgagePayment(
     loanAmount, 
-    inputs.mortgageInterestRate
+    numericInputs.mortgageInterestRate
   );
   
   // Calculate monthly ownership costs
-  const monthlyMaintenance = (inputs.homePrice * inputs.annualMaintenanceCosts / 100) / 12;
-  const monthlyOwnershipCosts = (inputs.homePrice * inputs.annualOwnershipCosts / 100) / 12;
+  const monthlyMaintenance = (numericInputs.homePrice * numericInputs.annualMaintenanceCosts / 100) / 12;
+  const monthlyOwnershipCosts = (numericInputs.homePrice * numericInputs.annualOwnershipCosts / 100) / 12;
   const ownerMonthlyPayment = monthlyMortgagePayment + monthlyMaintenance + monthlyOwnershipCosts;
   
   // Initialize variables for year-by-year calculation
   const yearlyData: YearlyData[] = [];
-  let currentPropertyValue = inputs.homePrice;
-  let currentMonthlyRent = inputs.monthlyRent;
+  let currentPropertyValue = numericInputs.homePrice;
+  let currentMonthlyRent = numericInputs.monthlyRent;
   let downPaymentInvestment = downPayment; // Initial investment (down payment only, closing costs are expense)
   let accumulatedSavings = 0;
   
@@ -54,31 +66,31 @@ export function calculateBuyVsRent(inputs: CalculatorInputs): CalculationResults
   accumulatedSavings = closingCosts; // Renter starts with closing costs as savings
   yearlyData.push({
     year: 0,
-    propertyValue: inputs.homePrice,
+    propertyValue: numericInputs.homePrice,
     homeownerEquity: downPayment + closingCosts, // Initial equity includes closing costs
     downPaymentInvestment: downPayment, // Renter invests the down payment amount
     accumulatedSavings: closingCosts, // Renter saves closing costs from day 1
     totalRenterInvestment: downPayment + closingCosts, // Down payment + closing costs savings
-    monthlyRent: inputs.monthlyRent,
+    monthlyRent: numericInputs.monthlyRent,
     ownerMonthlyPayment,
-    monthlyDifference: ownerMonthlyPayment - inputs.monthlyRent,
+    monthlyDifference: ownerMonthlyPayment - numericInputs.monthlyRent,
   });
   
   // Calculate for each year
-  for (let year = 1; year <= inputs.timeHorizon; year++) {
+  for (let year = 1; year <= numericInputs.timeHorizon; year++) {
     // Property value appreciation
-    currentPropertyValue = inputs.homePrice * Math.pow(1 + inputs.homeAppreciationRate / 100, year);
+    currentPropertyValue = numericInputs.homePrice * Math.pow(1 + numericInputs.homeAppreciationRate / 100, year);
     
     // Down payment investment growth (renter only invests down payment, not closing costs)
-    downPaymentInvestment = downPayment * Math.pow(1 + inputs.investmentReturnRate / 100, year);
+    downPaymentInvestment = downPayment * Math.pow(1 + numericInputs.investmentReturnRate / 100, year);
     
     // Calculate accumulated savings with monthly additions and annual compounding
     // First apply investment growth to existing savings from previous year (including initial closing costs)
-    accumulatedSavings = accumulatedSavings * (1 + inputs.investmentReturnRate / 100);
+    accumulatedSavings = accumulatedSavings * (1 + numericInputs.investmentReturnRate / 100);
     
     // Calculate average monthly rent for this year (accounting for rent increase throughout the year)
-    const startYearMonthlyRent = inputs.monthlyRent * Math.pow(1 + inputs.rentIncreaseRate / 100, year - 1);
-    const endYearMonthlyRent = inputs.monthlyRent * Math.pow(1 + inputs.rentIncreaseRate / 100, year);
+    const startYearMonthlyRent = numericInputs.monthlyRent * Math.pow(1 + numericInputs.rentIncreaseRate / 100, year - 1);
+    const endYearMonthlyRent = numericInputs.monthlyRent * Math.pow(1 + numericInputs.rentIncreaseRate / 100, year);
     const averageMonthlyRent = (startYearMonthlyRent + endYearMonthlyRent) / 2;
     
     // Calculate monthly savings for renter (if owner pays more than renter)
@@ -95,8 +107,8 @@ export function calculateBuyVsRent(inputs: CalculatorInputs): CalculationResults
     const remainingPayments = 30 * 12 - monthsElapsed; // Assuming 30-year mortgage
     let remainingLoanBalance = 0;
     
-    if (remainingPayments > 0 && inputs.mortgageInterestRate > 0) {
-      const monthlyRate = inputs.mortgageInterestRate / 100 / 12;
+    if (remainingPayments > 0 && numericInputs.mortgageInterestRate > 0) {
+      const monthlyRate = numericInputs.mortgageInterestRate / 100 / 12;
       remainingLoanBalance = loanAmount * 
         (Math.pow(1 + monthlyRate, 30 * 12) - Math.pow(1 + monthlyRate, monthsElapsed)) /
         (Math.pow(1 + monthlyRate, 30 * 12) - 1);

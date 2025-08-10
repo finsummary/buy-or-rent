@@ -32,47 +32,63 @@ const BuyOrRentCalculator = () => {
     if (results) {
       trackCalculation(
         results.recommendation,
-        inputs.homePrice,
-        inputs.timeHorizon
+        Number(inputs.homePrice) || 0,
+        Number(inputs.timeHorizon) || 0,
       );
     }
   }, [results, inputs.homePrice, inputs.timeHorizon]);
 
   const handleLoadScenario = (scenarioInputs: CalculatorInputs) => {
-    setInputs(scenarioInputs);
+    // Ensure all loaded values are strings for consistency
+    const stringifiedInputs = Object.fromEntries(
+      Object.entries(scenarioInputs).map(([key, value]) => [key, String(value)])
+    ) as unknown as CalculatorInputs;
+    
+    // downPaymentType should not be stringified
+    stringifiedInputs.downPaymentType = scenarioInputs.downPaymentType;
+
+    setInputs(stringifiedInputs);
     setActiveTab("inputs"); // Switch back to inputs tab
   };
 
-  const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
+  const handleInputChange = (field: keyof CalculatorInputs, value: string) => {
     if (field === 'downPaymentType') {
-      // Ensure only valid values are set for downPaymentType
       if (value === 'percentage' || value === 'amount') {
         setInputs(prev => ({ ...prev, [field]: value }));
       }
       return;
     }
     
-    // Convert to string to handle number inputs correctly
-    const stringValue = value.toString();
-    
-    // For numeric fields, update state with the string value for controlled input
-    // but use the parsed number for calculations. This prevents leading zeros.
-    const numericValue = Number(stringValue);
-
-    if (!isNaN(numericValue)) {
-      let processedValue: number | string = numericValue;
-      if (field === 'downPaymentPercentage') {
-        processedValue = Math.max(0, Math.min(100, numericValue));
-      }
-      setInputs(prev => ({ ...prev, [field]: processedValue }));
-    } else if (stringValue === '') {
-       setInputs(prev => ({ ...prev, [field]: 0 }));
+    // Sanitize input to allow only numbers and a single decimal point
+    let sanitizedValue = value.replace(/[^0-9.]/g, '');
+    const parts = sanitizedValue.split('.');
+    if (parts.length > 2) {
+      sanitizedValue = parts[0] + '.' + parts.slice(1).join('');
     }
+
+    // Prevent leading zeros unless it's a decimal like "0."
+    if (sanitizedValue.length > 1 && sanitizedValue.startsWith('0') && !sanitizedValue.startsWith('0.')) {
+      sanitizedValue = sanitizedValue.substring(1);
+    }
+
+    if (field === 'downPaymentPercentage') {
+        const numericValue = Number(sanitizedValue);
+        if (numericValue > 100) {
+            sanitizedValue = '100';
+        }
+    }
+
+    setInputs(prev => ({ ...prev, [field]: sanitizedValue }));
   };
 
-  const downPaymentAmount = inputs.downPaymentType === 'percentage' 
-    ? inputs.homePrice * (inputs.downPaymentPercentage / 100)
-    : inputs.downPaymentAmount;
+  const downPaymentAmount = useMemo(() => {
+    const homePrice = Number(inputs.homePrice) || 0;
+    if (inputs.downPaymentType === 'percentage') {
+      const downPaymentPercentage = Number(inputs.downPaymentPercentage) || 0;
+      return homePrice * (downPaymentPercentage / 100);
+    }
+    return Number(inputs.downPaymentAmount) || 0;
+  }, [inputs.homePrice, inputs.downPaymentPercentage, inputs.downPaymentAmount, inputs.downPaymentType]);
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -127,7 +143,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="homePrice">Home Price</Label>
                     <Input
                       id="homePrice"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.homePrice}
                       onChange={(e) => handleInputChange('homePrice', e.target.value)}
                       className="text-lg"
@@ -155,10 +172,8 @@ const BuyOrRentCalculator = () => {
                     {inputs.downPaymentType === 'percentage' ? (
                       <div className="space-y-1">
                         <Input
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="0.1"
+                          type="text"
+                          inputMode="decimal"
                           value={inputs.downPaymentPercentage}
                           onChange={(e) => handleInputChange('downPaymentPercentage', e.target.value)}
                           placeholder="Percentage"
@@ -171,14 +186,15 @@ const BuyOrRentCalculator = () => {
                     ) : (
                       <div className="space-y-1">
                         <Input
-                          type="number"
+                          type="text"
+                          inputMode="decimal"
                           value={inputs.downPaymentAmount}
                           onChange={(e) => handleInputChange('downPaymentAmount', e.target.value)}
                           placeholder="Amount"
                           className="text-lg"
                         />
                         <p className="text-sm text-muted-foreground">
-                          Percentage: {((inputs.downPaymentAmount / inputs.homePrice) * 100).toFixed(1)}%
+                          Percentage: {(Number(inputs.homePrice) > 0 ? (Number(inputs.downPaymentAmount) / Number(inputs.homePrice)) * 100 : 0).toFixed(1)}%
                         </p>
                       </div>
                     )}
@@ -188,8 +204,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="mortgageRate">Mortgage Interest Rate (%)</Label>
                     <Input
                       id="mortgageRate"
-                      type="number"
-                      step="0.1"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.mortgageInterestRate}
                       onChange={(e) => handleInputChange('mortgageInterestRate', e.target.value)}
                       className="text-lg"
@@ -200,7 +216,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="timeHorizon">Time Horizon (years)</Label>
                     <Input
                       id="timeHorizon"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.timeHorizon}
                       onChange={(e) => handleInputChange('timeHorizon', e.target.value)}
                       className="text-lg"
@@ -225,8 +242,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="closingCosts">Closing Costs (% of home price)</Label>
                     <Input
                       id="closingCosts"
-                      type="number"
-                      step="0.1"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.closingCosts}
                       onChange={(e) => handleInputChange('closingCosts', e.target.value)}
                       className="text-lg"
@@ -237,8 +254,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="maintenanceCosts">Annual Maintenance (% of home price)</Label>
                     <Input
                       id="maintenanceCosts"
-                      type="number"
-                      step="0.1"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.annualMaintenanceCosts}
                       onChange={(e) => handleInputChange('annualMaintenanceCosts', e.target.value)}
                       className="text-lg"
@@ -249,8 +266,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="ownershipCosts">Annual Ownership Costs (% of home price)</Label>
                     <Input
                       id="ownershipCosts"
-                      type="number"
-                      step="0.1"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.annualOwnershipCosts}
                       onChange={(e) => handleInputChange('annualOwnershipCosts', e.target.value)}
                       className="text-lg"
@@ -264,7 +281,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="monthlyRent">Monthly Rent</Label>
                     <Input
                       id="monthlyRent"
-                      type="number"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.monthlyRent}
                       onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
                       className="text-lg"
@@ -290,8 +308,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="homeAppreciation">Home Appreciation (%/year)</Label>
                       <Input
                         id="homeAppreciation"
-                        type="number"
-                        step="0.1"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.homeAppreciationRate}
                         onChange={(e) => handleInputChange('homeAppreciationRate', e.target.value)}
                         className="text-lg"
@@ -302,8 +320,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="rentIncrease">Rent Increase (%/year)</Label>
                       <Input
                         id="rentIncrease"
-                        type="number"
-                        step="0.1"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.rentIncreaseRate}
                         onChange={(e) => handleInputChange('rentIncreaseRate', e.target.value)}
                         className="text-lg"
@@ -314,8 +332,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="investmentReturn">Investment Return (%/year)</Label>
                       <Input
                         id="investmentReturn"
-                        type="number"
-                        step="0.1"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.investmentReturnRate}
                         onChange={(e) => handleInputChange('investmentReturnRate', e.target.value)}
                         className="text-lg"
@@ -383,12 +401,12 @@ const BuyOrRentCalculator = () => {
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Current Rent:</span>
-                    <span className="font-medium">{formatCurrency(inputs.monthlyRent)}</span>
+                    <span className="font-medium">{formatCurrency(Number(inputs.monthlyRent))}</span>
                   </div>
                   <div className="border-t pt-4 flex justify-between items-center p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg">
                     <span className="font-semibold">Monthly Difference:</span>
-                    <span className={`font-bold ${results.ownerMonthlyPayment > inputs.monthlyRent ? 'text-red-600' : 'text-green-600'}`}>
-                      {formatCurrency(Math.abs(results.ownerMonthlyPayment - inputs.monthlyRent))}
+                    <span className={`font-bold ${results.ownerMonthlyPayment > Number(inputs.monthlyRent) ? 'text-red-600' : 'text-green-600'}`}>
+                      {formatCurrency(Math.abs(results.ownerMonthlyPayment - Number(inputs.monthlyRent)))}
                     </span>
                   </div>
                 </CardContent>
@@ -402,7 +420,7 @@ const BuyOrRentCalculator = () => {
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Down Payment + Closing:</span>
-                    <span className="font-medium">{formatCurrency(downPaymentAmount + (inputs.homePrice * inputs.closingCosts / 100))}</span>
+                    <span className="font-medium">{formatCurrency(downPaymentAmount + (Number(inputs.homePrice) * (Number(inputs.closingCosts) / 100)))}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Down Payment Investment:</span>

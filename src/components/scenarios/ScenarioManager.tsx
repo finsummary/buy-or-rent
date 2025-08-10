@@ -22,18 +22,22 @@ export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManag
   const [scenarioName, setScenarioName] = useState('');
   const [scenarioDescription, setScenarioDescription] = useState('');
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSaveScenario = async () => {
     if (!scenarioName.trim()) return;
 
     setSaving(true);
+    setError(null);
     try {
       await saveScenario(scenarioName, currentInputs, scenarioDescription);
       setScenarioName('');
       setScenarioDescription('');
       // setSaveDialogOpen(false); // This was part of the unused state
-    } catch (error) {
-      console.error('Failed to save scenario:', error);
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred.';
+      setError(`Failed to save scenario: ${errorMessage}`);
+      console.error('Failed to save scenario:', err);
     } finally {
       setSaving(false);
     }
@@ -98,6 +102,12 @@ export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManag
             <TabsTrigger value="scenarios">My Scenarios</TabsTrigger>
             <TabsTrigger value="save">Save New</TabsTrigger>
           </TabsList>
+
+          {error && (
+            <div className="mt-4 p-3 rounded-md bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600 text-center">{error}</p>
+            </div>
+          )}
 
           <TabsContent value="scenarios" className="mt-4">
             {loading ? (

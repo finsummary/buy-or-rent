@@ -45,7 +45,10 @@ const BuyOrRentCalculator = () => {
 
   const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
     if (field === 'downPaymentType') {
-      setInputs(prev => ({ ...prev, [field]: value }));
+      // Ensure only valid values are set for downPaymentType
+      if (value === 'percentage' || value === 'amount') {
+        setInputs(prev => ({ ...prev, [field]: value }));
+      }
       return;
     }
     

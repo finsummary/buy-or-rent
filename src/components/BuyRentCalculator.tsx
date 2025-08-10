@@ -44,24 +44,27 @@ const BuyOrRentCalculator = () => {
   };
 
   const handleInputChange = (field: keyof CalculatorInputs, value: string | number) => {
-    let processedValue: string | number;
-
     if (field === 'downPaymentType') {
-      processedValue = value;
-    } else {
-      const parsed = parseFloat(value.toString());
-      processedValue = isNaN(parsed) ? 0 : parsed;
+      setInputs(prev => ({ ...prev, [field]: value }));
+      return;
     }
     
-    // Limit down payment percentage to 0-100%
-    if (field === 'downPaymentPercentage' && typeof processedValue === 'number') {
-      processedValue = Math.max(0, Math.min(100, processedValue));
-    }
+    // Convert to string to handle number inputs correctly
+    const stringValue = value.toString();
     
-    setInputs(prev => ({
-      ...prev,
-      [field]: processedValue
-    }));
+    // For numeric fields, update state with the string value for controlled input
+    // but use the parsed number for calculations. This prevents leading zeros.
+    const numericValue = Number(stringValue);
+
+    if (!isNaN(numericValue)) {
+      let processedValue: number | string = numericValue;
+      if (field === 'downPaymentPercentage') {
+        processedValue = Math.max(0, Math.min(100, numericValue));
+      }
+      setInputs(prev => ({ ...prev, [field]: processedValue }));
+    } else if (stringValue === '') {
+       setInputs(prev => ({ ...prev, [field]: 0 }));
+    }
   };
 
   const downPaymentAmount = inputs.downPaymentType === 'percentage' 

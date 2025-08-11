@@ -19,7 +19,21 @@ export function calculateMonthlyMortgagePayment(
   return monthlyPayment;
 }
 
-export function calculateBuyVsRent(inputs: Omit<CalculatorInputs, 'downPaymentType' |'homePrice' | 'downPaymentPercentage' | 'downPaymentAmount' | 'mortgageInterestRate' | 'timeHorizon' | 'closingCosts' | 'annualMaintenanceCosts' | 'annualOwnershipCosts' | 'monthlyRent' | 'homeAppreciationRate' | 'rentIncreaseRate' | 'investmentReturnRate'> & { downPaymentType: 'percentage' | 'amount', homePrice: number, downPaymentPercentage: number, downPaymentAmount: number, mortgageInterestRate: number, timeHorizon: number, closingCosts: number, annualMaintenanceCosts: number, annualOwnershipCosts: number, monthlyRent: number, homeAppreciationRate: number, rentIncreaseRate: number, investmentReturnRate: number }): CalculationResults {
+export function calculateBuyVsRent(inputs: {
+  homePrice: number;
+  downPaymentType: 'percentage' | 'amount';
+  downPaymentPercentage: number;
+  downPaymentAmount: number;
+  mortgageInterestRate: number;
+  timeHorizon: number;
+  closingCosts: number;
+  annualMaintenanceCosts: number;
+  annualOwnershipCosts: number;
+  monthlyRent: number;
+  homeAppreciationRate: number;
+  rentIncreaseRate: number;
+  investmentReturnRate: number;
+}): CalculationResults {
   // Calculate down payment amount
   const downPayment = inputs.downPaymentType === 'percentage' 
     ? inputs.homePrice * (inputs.downPaymentPercentage / 100)

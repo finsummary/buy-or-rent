@@ -152,8 +152,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="homePrice">Home Price</Label>
                     <Input
                       id="homePrice"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.homePrice}
                       onChange={(e) => handleInputChange('homePrice', e.target.value)}
                       className="text-lg"
@@ -181,8 +180,7 @@ const BuyOrRentCalculator = () => {
                     {inputs.downPaymentType === 'percentage' ? (
                       <div className="space-y-1">
                         <Input
-                          type="text"
-                          inputMode="decimal"
+                          type="tel"
                           value={inputs.downPaymentPercentage}
                           onChange={(e) => handleInputChange('downPaymentPercentage', e.target.value)}
                           placeholder="Percentage"
@@ -195,8 +193,7 @@ const BuyOrRentCalculator = () => {
                     ) : (
                       <div className="space-y-1">
                         <Input
-                          type="text"
-                          inputMode="decimal"
+                          type="tel"
                           value={inputs.downPaymentAmount}
                           onChange={(e) => handleInputChange('downPaymentAmount', e.target.value)}
                           placeholder="Amount"
@@ -213,8 +210,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="mortgageRate">Mortgage Interest Rate (%)</Label>
                     <Input
                       id="mortgageRate"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.mortgageInterestRate}
                       onChange={(e) => handleInputChange('mortgageInterestRate', e.target.value)}
                       className="text-lg"
@@ -225,8 +221,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="timeHorizon">Time Horizon (years)</Label>
                     <Input
                       id="timeHorizon"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.timeHorizon}
                       onChange={(e) => handleInputChange('timeHorizon', e.target.value)}
                       className="text-lg"
@@ -251,8 +246,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="closingCosts">Closing Costs (% of home price)</Label>
                     <Input
                       id="closingCosts"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.closingCosts}
                       onChange={(e) => handleInputChange('closingCosts', e.target.value)}
                       className="text-lg"
@@ -263,8 +257,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="maintenanceCosts">Annual Maintenance (% of home price)</Label>
                     <Input
                       id="maintenanceCosts"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.annualMaintenanceCosts}
                       onChange={(e) => handleInputChange('annualMaintenanceCosts', e.target.value)}
                       className="text-lg"
@@ -275,8 +268,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="ownershipCosts">Annual Ownership Costs (% of home price)</Label>
                     <Input
                       id="ownershipCosts"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.annualOwnershipCosts}
                       onChange={(e) => handleInputChange('annualOwnershipCosts', e.target.value)}
                       className="text-lg"
@@ -290,8 +282,7 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="monthlyRent">Monthly Rent</Label>
                     <Input
                       id="monthlyRent"
-                      type="text"
-                      inputMode="decimal"
+                      type="tel"
                       value={inputs.monthlyRent}
                       onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
                       className="text-lg"
@@ -317,8 +308,7 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="homeAppreciation">Home Appreciation (%/year)</Label>
                       <Input
                         id="homeAppreciation"
-                        type="text"
-                        inputMode="decimal"
+                        type="tel"
                         value={inputs.homeAppreciationRate}
                         onChange={(e) => handleInputChange('homeAppreciationRate', e.target.value)}
                         className="text-lg"
@@ -329,8 +319,7 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="rentIncrease">Rent Increase (%/year)</Label>
                       <Input
                         id="rentIncrease"
-                        type="text"
-                        inputMode="decimal"
+                        type="tel"
                         value={inputs.rentIncreaseRate}
                         onChange={(e) => handleInputChange('rentIncreaseRate', e.target.value)}
                         className="text-lg"
@@ -341,8 +330,7 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="investmentReturn">Investment Return (%/year)</Label>
                       <Input
                         id="investmentReturn"
-                        type="text"
-                        inputMode="decimal"
+                        type="tel"
                         value={inputs.investmentReturnRate}
                         onChange={(e) => handleInputChange('investmentReturnRate', e.target.value)}
                         className="text-lg"

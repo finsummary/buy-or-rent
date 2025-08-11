@@ -1,17 +1,17 @@
 export interface CalculatorInputs {
-  homePrice: number | string;
+  homePrice: number | '';
   downPaymentType: 'percentage' | 'amount';
-  downPaymentPercentage: number | string;
-  downPaymentAmount: number | string;
-  mortgageInterestRate: number | string;
-  timeHorizon: number | string;
-  closingCosts: number | string; // as % of home price
-  annualMaintenanceCosts: number | string; // as % of home price
-  annualOwnershipCosts: number | string; // as % of home price (insurance, taxes, etc.)
-  monthlyRent: number | string;
-  homeAppreciationRate: number | string; // % per year
-  rentIncreaseRate: number | string; // % per year
-  investmentReturnRate: number | string; // % per year
+  downPaymentPercentage: number | '';
+  downPaymentAmount: number | '';
+  mortgageInterestRate: number | '';
+  timeHorizon: number | '';
+  closingCosts: number | ''; // as % of home price
+  annualMaintenanceCosts: number | ''; // as % of home price
+  annualOwnershipCosts: number | ''; // as % of home price (insurance, taxes, etc.)
+  monthlyRent: number | '';
+  homeAppreciationRate: number | ''; // % per year
+  rentIncreaseRate: number | ''; // % per year
+  investmentReturnRate: number | ''; // % per year
 }
 
 export interface YearlyData {
@@ -39,17 +39,17 @@ export interface CalculationResults {
 }
 
 export const defaultInputs: CalculatorInputs = {
-  homePrice: '400000',
+  homePrice: 400000,
   downPaymentType: 'percentage',
-  downPaymentPercentage: '20',
-  downPaymentAmount: '80000',
-  mortgageInterestRate: '6.5',
-  timeHorizon: '10',
-  closingCosts: '2.5',
-  annualMaintenanceCosts: '1',
-  annualOwnershipCosts: '2.5',
-  monthlyRent: '2500',
-  homeAppreciationRate: '3',
-  rentIncreaseRate: '2.5',
-  investmentReturnRate: '7',
+  downPaymentPercentage: 20,
+  downPaymentAmount: 80000,
+  mortgageInterestRate: 6.5,
+  timeHorizon: 10,
+  closingCosts: 2.5,
+  annualMaintenanceCosts: 1,
+  annualOwnershipCosts: 2.5,
+  monthlyRent: 2500,
+  homeAppreciationRate: 3,
+  rentIncreaseRate: 2.5,
+  investmentReturnRate: 7,
 };

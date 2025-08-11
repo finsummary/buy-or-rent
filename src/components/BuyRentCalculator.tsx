@@ -58,10 +58,36 @@ const BuyOrRentCalculator = () => {
       }
       return;
     }
+
+    // If the input is empty, store an empty string.
+    if (value === '') {
+      setInputs(prev => ({ ...prev, [field]: '' }));
+      return;
+    }
+
+    // Allow only numbers and a single decimal point.
+    const sanitizedValue = value.replace(/[^0-9.]/g, '');
+    const parts = sanitizedValue.split('.');
+    if (parts.length > 2) {
+      // More than one decimal point, ignore the last character typed.
+      return; 
+    }
     
-    // Reverted to a simpler handler to avoid mobile browser conflicts.
-    // The calculation logic already handles parsing of strings.
-    setInputs(prev => ({ ...prev, [field]: value }));
+    // Prevent leading zeros on whole numbers (e.g. "05" -> "5")
+    // but allow for decimal values like "0.5"
+    let finalValue = sanitizedValue;
+    if (finalValue.length > 1 && finalValue.startsWith('0') && !finalValue.startsWith('0.')) {
+      finalValue = finalValue.substring(1);
+    }
+    
+    // For the percentage field, cap the value at 100
+    if (field === 'downPaymentPercentage') {
+      if (Number(finalValue) > 100) {
+        finalValue = '100';
+      }
+    }
+
+    setInputs(prev => ({ ...prev, [field]: finalValue }));
   };
 
   const downPaymentAmount = useMemo(() => {

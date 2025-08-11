@@ -58,36 +58,10 @@ const BuyOrRentCalculator = () => {
       }
       return;
     }
-
-    // Allow the field to be completely empty
-    if (value === '') {
-      setInputs(prev => ({ ...prev, [field]: '' }));
-      return;
-    }
-
-    // Regex to allow only valid numeric/decimal patterns
-    const validNumericRegex = /^[0-9]*\.?[0-9]*$/;
-    if (!validNumericRegex.test(value)) {
-      // If invalid characters are typed, ignore the change
-      return;
-    }
     
-    let finalValue = value;
-
-    // Remove leading zeros for whole numbers (e.g., '05' -> '5')
-    // but allow them for decimals starting with zero (e.g., '0.5')
-    if (!finalValue.includes('.')) {
-      finalValue = String(Number(finalValue));
-    }
-    
-    // For the percentage field, cap the value at 100
-    if (field === 'downPaymentPercentage') {
-      if (Number(finalValue) > 100) {
-        finalValue = '100';
-      }
-    }
-    
-    setInputs(prev => ({ ...prev, [field]: finalValue }));
+    // Reverted to a simpler handler to avoid mobile browser conflicts.
+    // The calculation logic already handles parsing of strings.
+    setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const downPaymentAmount = useMemo(() => {
@@ -152,7 +126,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="homePrice">Home Price</Label>
                     <Input
                       id="homePrice"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.homePrice}
                       onChange={(e) => handleInputChange('homePrice', e.target.value)}
                       className="text-lg"
@@ -180,7 +155,8 @@ const BuyOrRentCalculator = () => {
                     {inputs.downPaymentType === 'percentage' ? (
                       <div className="space-y-1">
                         <Input
-                          type="tel"
+                          type="text"
+                          inputMode="decimal"
                           value={inputs.downPaymentPercentage}
                           onChange={(e) => handleInputChange('downPaymentPercentage', e.target.value)}
                           placeholder="Percentage"
@@ -193,7 +169,8 @@ const BuyOrRentCalculator = () => {
                     ) : (
                       <div className="space-y-1">
                         <Input
-                          type="tel"
+                          type="text"
+                          inputMode="decimal"
                           value={inputs.downPaymentAmount}
                           onChange={(e) => handleInputChange('downPaymentAmount', e.target.value)}
                           placeholder="Amount"
@@ -210,7 +187,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="mortgageRate">Mortgage Interest Rate (%)</Label>
                     <Input
                       id="mortgageRate"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.mortgageInterestRate}
                       onChange={(e) => handleInputChange('mortgageInterestRate', e.target.value)}
                       className="text-lg"
@@ -221,7 +199,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="timeHorizon">Time Horizon (years)</Label>
                     <Input
                       id="timeHorizon"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.timeHorizon}
                       onChange={(e) => handleInputChange('timeHorizon', e.target.value)}
                       className="text-lg"
@@ -246,7 +225,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="closingCosts">Closing Costs (% of home price)</Label>
                     <Input
                       id="closingCosts"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.closingCosts}
                       onChange={(e) => handleInputChange('closingCosts', e.target.value)}
                       className="text-lg"
@@ -257,7 +237,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="maintenanceCosts">Annual Maintenance (% of home price)</Label>
                     <Input
                       id="maintenanceCosts"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.annualMaintenanceCosts}
                       onChange={(e) => handleInputChange('annualMaintenanceCosts', e.target.value)}
                       className="text-lg"
@@ -268,7 +249,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="ownershipCosts">Annual Ownership Costs (% of home price)</Label>
                     <Input
                       id="ownershipCosts"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.annualOwnershipCosts}
                       onChange={(e) => handleInputChange('annualOwnershipCosts', e.target.value)}
                       className="text-lg"
@@ -282,7 +264,8 @@ const BuyOrRentCalculator = () => {
                     <Label htmlFor="monthlyRent">Monthly Rent</Label>
                     <Input
                       id="monthlyRent"
-                      type="tel"
+                      type="text"
+                      inputMode="decimal"
                       value={inputs.monthlyRent}
                       onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
                       className="text-lg"
@@ -308,7 +291,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="homeAppreciation">Home Appreciation (%/year)</Label>
                       <Input
                         id="homeAppreciation"
-                        type="tel"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.homeAppreciationRate}
                         onChange={(e) => handleInputChange('homeAppreciationRate', e.target.value)}
                         className="text-lg"
@@ -319,7 +303,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="rentIncrease">Rent Increase (%/year)</Label>
                       <Input
                         id="rentIncrease"
-                        type="tel"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.rentIncreaseRate}
                         onChange={(e) => handleInputChange('rentIncreaseRate', e.target.value)}
                         className="text-lg"
@@ -330,7 +315,8 @@ const BuyOrRentCalculator = () => {
                       <Label htmlFor="investmentReturn">Investment Return (%/year)</Label>
                       <Input
                         id="investmentReturn"
-                        type="tel"
+                        type="text"
+                        inputMode="decimal"
                         value={inputs.investmentReturnRate}
                         onChange={(e) => handleInputChange('investmentReturnRate', e.target.value)}
                         className="text-lg"

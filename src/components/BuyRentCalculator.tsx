@@ -79,14 +79,27 @@ const BuyOrRentCalculator = () => {
       }
       return;
     }
-
-    // Regex to allow only valid numeric/decimal patterns
-    const validNumericRegex = /^[0-9]*\.?[0-9]*$/;
-    if (!validNumericRegex.test(value)) {
-      return; // If invalid characters are typed, ignore the change
-    }
-
+    // Simply update the state with what the user is typing.
+    // The validation and formatting will happen onBlur.
     setInputs(prev => ({ ...prev, [field]: value }));
+  };
+  
+  const handleInputBlur = (field: keyof CalculatorInputs, value: string) => {
+    const cleanedValue = value.replace(/[^0-9.]/g, '');
+    const numericValue = parseFloat(cleanedValue);
+
+    if (isNaN(numericValue) || cleanedValue.trim() === '') {
+      setInputs(prev => ({ ...prev, [field]: '' }));
+      return;
+    }
+    
+    let finalValue = numericValue;
+
+    if (field === 'downPaymentPercentage') {
+      finalValue = Math.max(0, Math.min(100, finalValue));
+    }
+    
+    setInputs(prev => ({ ...prev, [field]: String(finalValue) }));
   };
 
   const downPaymentAmount = useMemo(() => {
@@ -155,6 +168,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.homePrice}
                       onChange={(e) => handleInputChange('homePrice', e.target.value)}
+                      onBlur={(e) => handleInputBlur('homePrice', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -184,6 +198,7 @@ const BuyOrRentCalculator = () => {
                           inputMode="decimal"
                           value={inputs.downPaymentPercentage}
                           onChange={(e) => handleInputChange('downPaymentPercentage', e.target.value)}
+                          onBlur={(e) => handleInputBlur('downPaymentPercentage', e.target.value)}
                           placeholder="Percentage"
                           className="text-lg"
                         />
@@ -198,6 +213,7 @@ const BuyOrRentCalculator = () => {
                           inputMode="decimal"
                           value={inputs.downPaymentAmount}
                           onChange={(e) => handleInputChange('downPaymentAmount', e.target.value)}
+                          onBlur={(e) => handleInputBlur('downPaymentAmount', e.target.value)}
                           placeholder="Amount"
                           className="text-lg"
                         />
@@ -216,6 +232,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.mortgageInterestRate}
                       onChange={(e) => handleInputChange('mortgageInterestRate', e.target.value)}
+                      onBlur={(e) => handleInputBlur('mortgageInterestRate', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -228,6 +245,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.timeHorizon}
                       onChange={(e) => handleInputChange('timeHorizon', e.target.value)}
+                      onBlur={(e) => handleInputBlur('timeHorizon', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -254,6 +272,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.closingCosts}
                       onChange={(e) => handleInputChange('closingCosts', e.target.value)}
+                      onBlur={(e) => handleInputBlur('closingCosts', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -266,6 +285,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.annualMaintenanceCosts}
                       onChange={(e) => handleInputChange('annualMaintenanceCosts', e.target.value)}
+                      onBlur={(e) => handleInputBlur('annualMaintenanceCosts', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -278,6 +298,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.annualOwnershipCosts}
                       onChange={(e) => handleInputChange('annualOwnershipCosts', e.target.value)}
+                      onBlur={(e) => handleInputBlur('annualOwnershipCosts', e.target.value)}
                       className="text-lg"
                     />
                     <p className="text-xs text-muted-foreground">
@@ -293,6 +314,7 @@ const BuyOrRentCalculator = () => {
                       inputMode="decimal"
                       value={inputs.monthlyRent}
                       onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
+                      onBlur={(e) => handleInputBlur('monthlyRent', e.target.value)}
                       className="text-lg"
                     />
                   </div>
@@ -320,6 +342,7 @@ const BuyOrRentCalculator = () => {
                         inputMode="decimal"
                         value={inputs.homeAppreciationRate}
                         onChange={(e) => handleInputChange('homeAppreciationRate', e.target.value)}
+                        onBlur={(e) => handleInputBlur('homeAppreciationRate', e.target.value)}
                         className="text-lg"
                       />
                     </div>
@@ -332,6 +355,7 @@ const BuyOrRentCalculator = () => {
                         inputMode="decimal"
                         value={inputs.rentIncreaseRate}
                         onChange={(e) => handleInputChange('rentIncreaseRate', e.target.value)}
+                        onBlur={(e) => handleInputBlur('rentIncreaseRate', e.target.value)}
                         className="text-lg"
                       />
                     </div>
@@ -344,6 +368,7 @@ const BuyOrRentCalculator = () => {
                         inputMode="decimal"
                         value={inputs.investmentReturnRate}
                         onChange={(e) => handleInputChange('investmentReturnRate', e.target.value)}
+                        onBlur={(e) => handleInputBlur('investmentReturnRate', e.target.value)}
                         className="text-lg"
                       />
                     </div>

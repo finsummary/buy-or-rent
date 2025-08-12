@@ -18,7 +18,6 @@ import { YearlyBreakdownTable } from '@/components/YearlyBreakdownTable';
 import { trackCalculation } from '@/components/analytics/GoogleAnalytics';
 import { FaqSection } from '@/components/FaqSection';
 import { Footer } from '@/components/Footer';
-import { AiSummary } from '@/components/AiSummary';
 import { WhatIfScenario } from '@/components/WhatIfScenario';
 import { cn } from '@/lib/utils';
 

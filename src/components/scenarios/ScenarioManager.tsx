@@ -145,8 +145,8 @@ export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManag
                            <Calendar className="h-3 w-3" />
                            {formatDate(scenario.updatedAt)}
                          </span>
-                         <span>Home: {formatCurrency(scenario.data.homePrice)}</span>
-                         <span>Rent: {formatCurrency(scenario.data.monthlyRent)}</span>
+                         <span>Home: {formatCurrency(Number(scenario.data.homePrice))}</span>
+                         <span>Rent: {formatCurrency(Number(scenario.data.monthlyRent))}</span>
                        </div>
                      </div>
                      <div className="flex items-center gap-2 ml-4">
@@ -194,12 +194,12 @@ export function ScenarioManager({ currentInputs, onLoadScenario }: ScenarioManag
             <div className="p-3 bg-gray-50 rounded-lg text-sm">
               <h4 className="font-medium mb-2">Current Scenario Summary:</h4>
               <div className="grid grid-cols-2 gap-2 text-xs">
-                <span>Home Price: {formatCurrency(currentInputs.homePrice)}</span>
+                <span>Home Price: {formatCurrency(Number(currentInputs.homePrice))}</span>
                 <span>Down Payment: {currentInputs.downPaymentType === 'percentage' 
                   ? `${currentInputs.downPaymentPercentage}%` 
-                  : formatCurrency(currentInputs.downPaymentAmount)}
+                  : formatCurrency(Number(currentInputs.downPaymentAmount))}
                 </span>
-                <span>Monthly Rent: {formatCurrency(currentInputs.monthlyRent)}</span>
+                <span>Monthly Rent: {formatCurrency(Number(currentInputs.monthlyRent))}</span>
                 <span>Time Horizon: {currentInputs.timeHorizon} years</span>
               </div>
             </div>

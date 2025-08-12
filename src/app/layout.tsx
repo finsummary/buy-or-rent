@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   creator: "BuyOrRent.io",
   publisher: "BuyOrRent.io",
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  other: {
+    'google-adsense-account': 'ca-pub-1957760053261594',
+  },
   openGraph: {
     title: "Buy vs Rent Calculator | BuyOrRent.io",
     description: "Make informed decisions about homeownership vs renting",

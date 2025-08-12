@@ -18,6 +18,7 @@ import { YearlyBreakdownTable } from '@/components/YearlyBreakdownTable';
 import { trackCalculation } from '@/components/analytics/GoogleAnalytics';
 import { FaqSection } from '@/components/FaqSection';
 import { Footer } from '@/components/Footer';
+import { AiSummary } from '@/components/AiSummary';
 
 const BuyOrRentCalculator = () => {
   const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
@@ -417,6 +418,11 @@ const BuyOrRentCalculator = () => {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* AI Summary */}
+              <div className="lg:col-span-2">
+                <AiSummary inputs={inputs} results={results} />
+              </div>
 
               {/* Monthly Payments */}
               <Card className="backdrop-blur-sm bg-white/90 border-white/60 shadow-lg">

@@ -28,6 +28,7 @@ const VARIABLE_DIRECTIONS: Record<keyof Omit<NumericCalculatorInputs, 'downPayme
   closingCosts: false,
   annualMaintenanceCosts: false,
   annualOwnershipCosts: false,
+  monthlyRent: true, // Higher rent makes buying more attractive
   investmentReturnRate: false,
   
   homeAppreciationRate: true,

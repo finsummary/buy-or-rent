@@ -46,6 +46,7 @@ export interface CalculationResults {
   monthlyMortgagePayment: number;
   ownerMonthlyPayment: number;
   finalPropertyValue: number;
+  finalHomeownerEquity: number;
   finalDownPaymentInvestment: number;
   finalAccumulatedSavings: number;
   totalRenterInvestment: number;

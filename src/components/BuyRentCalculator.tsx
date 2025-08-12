@@ -89,6 +89,18 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
     const { name, value } = e.target;
     setInputs(prev => ({ ...prev, [name]: value }));
   };
+
+  const handleDownPaymentTypeChange = (value: string) => {
+    if (value !== 'percentage' && value !== 'amount') return;
+
+    if (highlightedFields.size > 0) {
+      setHighlightedFields(new Set());
+    }
+    if (aiSource) {
+      setAiSource(null);
+    }
+    setInputs(prev => ({ ...prev, downPaymentType: value as 'percentage' | 'amount' }));
+  };
   
   const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (highlightedFields.size > 0) {
@@ -212,7 +224,7 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                     
                     <div className="space-y-1">
                       <Label>Down Payment</Label>
-                      <Tabs value={inputs.downPaymentType} onValueChange={(value) => handleInputChange({ target: { name: 'downPaymentType', value } })}>
+                      <Tabs value={inputs.downPaymentType} onValueChange={handleDownPaymentTypeChange}>
                         <TabsList className="grid w-full grid-cols-2">
                           <TabsTrigger value="percentage">Percentage</TabsTrigger>
                           <TabsTrigger value="amount">Amount</TabsTrigger>

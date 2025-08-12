@@ -28,3 +28,4 @@ export async function GET(request: NextRequest) {
   return NextResponse.redirect(`${origin}/auth/signin?message=Could not authenticate user`)
 }
 
+

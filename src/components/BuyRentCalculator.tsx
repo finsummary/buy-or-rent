@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Calculator, Home, DollarSign, TrendingUp, BarChart3, User } from 'lucide-react';
+import { Calculator, Home, DollarSign, TrendingUp, BarChart3, User, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 
@@ -19,10 +19,17 @@ import { trackCalculation } from '@/components/analytics/GoogleAnalytics';
 import { FaqSection } from '@/components/FaqSection';
 import { Footer } from '@/components/Footer';
 import { AiSummary } from '@/components/AiSummary';
+import { WhatIfScenario } from '@/components/WhatIfScenario';
+import { cn } from '@/lib/utils';
 
-const BuyOrRentCalculator = () => {
-  const [inputs, setInputs] = useState<CalculatorInputs>(defaultInputs);
-  const [activeTab, setActiveTab] = useState("inputs");
+export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<CalculatorInputs> }) {
+  const [inputs, setInputs] = useState<CalculatorInputs>(() => ({
+    ...defaultInputs,
+    ...initialInputs,
+  }));
+  const [activeTab, setActiveTab] = useState('inputs');
+  const [highlightedFields, setHighlightedFields] = useState<Set<string>>(new Set());
+  const [aiSource, setAiSource] = useState<string | null>(null);
 
   // Calculate results
   const results = useMemo(() => {
@@ -73,34 +80,47 @@ const BuyOrRentCalculator = () => {
     setActiveTab("inputs"); // Switch back to inputs tab
   };
 
-  const handleInputChange = (field: keyof CalculatorInputs, value: string) => {
-    if (field === 'downPaymentType') {
-      if (value === 'percentage' || value === 'amount') {
-        setInputs(prev => ({ ...prev, [field]: value }));
-      }
-      return;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (highlightedFields.size > 0) {
+      setHighlightedFields(new Set());
     }
-    // Simply update the state with what the user is typing.
-    // The validation and formatting will happen onBlur.
-    setInputs(prev => ({ ...prev, [field]: value }));
+    if (aiSource) {
+      setAiSource(null);
+    }
+    const { name, value } = e.target;
+    setInputs(prev => ({ ...prev, [name]: value }));
   };
   
-  const handleInputBlur = (field: keyof CalculatorInputs, value: string) => {
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    if (highlightedFields.size > 0) {
+      setHighlightedFields(new Set());
+    }
+    if (aiSource) {
+      setAiSource(null);
+    }
+    const { name, value } = e.target;
     const cleanedValue = value.replace(/[^0-9.]/g, '');
     const numericValue = parseFloat(cleanedValue);
 
     if (isNaN(numericValue) || cleanedValue.trim() === '') {
-      setInputs(prev => ({ ...prev, [field]: '' }));
+      setInputs(prev => ({ ...prev, [name]: '' }));
       return;
     }
     
     let finalValue = numericValue;
 
-    if (field === 'downPaymentPercentage') {
+    if (name === 'downPaymentPercentage') {
       finalValue = Math.max(0, Math.min(100, finalValue));
     }
     
-    setInputs(prev => ({ ...prev, [field]: String(finalValue) }));
+    setInputs(prev => ({ ...prev, [name]: String(finalValue) }));
+  };
+
+  const handleAiUpdate = (newInputs: Partial<CalculatorInputs>, source?: string) => {
+    const updatedKeys = new Set(Object.keys(newInputs));
+    setHighlightedFields(updatedKeys);
+    setAiSource(source || null);
+    setInputs(prev => ({ ...prev, ...newInputs }));
   };
 
   const downPaymentAmount = useMemo(() => {
@@ -148,234 +168,230 @@ const BuyOrRentCalculator = () => {
           </TabsList>
 
           <TabsContent value="inputs">
-            <div className="grid gap-6 lg:grid-cols-2">
-              {/* Home Purchase Details */}
-              <Card className="backdrop-blur-sm bg-white/90 border-white/60 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <Home className="h-5 w-5" />
-                    Home Purchase Details
-                  </CardTitle>
-                  <CardDescription>
-                    Enter details about the property and mortgage
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="homePrice">Home Price</Label>
-                    <Input
-                      id="homePrice"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.homePrice}
-                      onChange={(e) => handleInputChange('homePrice', e.target.value)}
-                      onBlur={(e) => handleInputBlur('homePrice', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Down Payment</Label>
-                    <div className="flex gap-2 mb-2">
-                      <Button
-                        variant={inputs.downPaymentType === 'percentage' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleInputChange('downPaymentType', 'percentage')}
-                      >
-                        Percentage
-                      </Button>
-                      <Button
-                        variant={inputs.downPaymentType === 'amount' ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => handleInputChange('downPaymentType', 'amount')}
-                      >
-                        Amount
-                      </Button>
-                    </div>
-                    {inputs.downPaymentType === 'percentage' ? (
-                      <div className="space-y-1">
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          value={inputs.downPaymentPercentage}
-                          onChange={(e) => handleInputChange('downPaymentPercentage', e.target.value)}
-                          onBlur={(e) => handleInputBlur('downPaymentPercentage', e.target.value)}
-                          placeholder="Percentage"
-                          className="text-lg"
-                        />
-                        <p className="text-sm text-muted-foreground">
-                          Amount: {formatCurrency(downPaymentAmount)}
-                        </p>
-                      </div>
-                    ) : (
-                      <div className="space-y-1">
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          value={inputs.downPaymentAmount}
-                          onChange={(e) => handleInputChange('downPaymentAmount', e.target.value)}
-                          onBlur={(e) => handleInputBlur('downPaymentAmount', e.target.value)}
-                          placeholder="Amount"
-                          className="text-lg"
-                        />
-                        <p className="text-sm text-muted-foreground">
-                          Percentage: {(Number(inputs.homePrice) > 0 ? (Number(inputs.downPaymentAmount) / Number(inputs.homePrice)) * 100 : 0).toFixed(1)}%
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="mortgageRate">Mortgage Interest Rate (%)</Label>
-                    <Input
-                      id="mortgageRate"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.mortgageInterestRate}
-                      onChange={(e) => handleInputChange('mortgageInterestRate', e.target.value)}
-                      onBlur={(e) => handleInputBlur('mortgageInterestRate', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="timeHorizon">Time Horizon (years)</Label>
-                    <Input
-                      id="timeHorizon"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.timeHorizon}
-                      onChange={(e) => handleInputChange('timeHorizon', e.target.value)}
-                      onBlur={(e) => handleInputBlur('timeHorizon', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Costs and Expenses */}
-              <Card className="backdrop-blur-sm bg-white/90 border-white/60 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <DollarSign className="h-5 w-5" />
-                    Costs & Expenses
-                  </CardTitle>
-                  <CardDescription>
-                    Additional costs as percentage of home price
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="closingCosts">Closing Costs (% of home price)</Label>
-                    <Input
-                      id="closingCosts"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.closingCosts}
-                      onChange={(e) => handleInputChange('closingCosts', e.target.value)}
-                      onBlur={(e) => handleInputBlur('closingCosts', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="maintenanceCosts">Annual Maintenance (% of home price)</Label>
-                    <Input
-                      id="maintenanceCosts"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.annualMaintenanceCosts}
-                      onChange={(e) => handleInputChange('annualMaintenanceCosts', e.target.value)}
-                      onBlur={(e) => handleInputBlur('annualMaintenanceCosts', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="ownershipCosts">Annual Ownership Costs (% of home price)</Label>
-                    <Input
-                      id="ownershipCosts"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.annualOwnershipCosts}
-                      onChange={(e) => handleInputChange('annualOwnershipCosts', e.target.value)}
-                      onBlur={(e) => handleInputBlur('annualOwnershipCosts', e.target.value)}
-                      className="text-lg"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Insurance, property taxes, HOA fees, etc.
+            <div className="space-y-6">
+              <WhatIfScenario inputs={inputs} onInputsChange={handleAiUpdate} />
+              {aiSource && (
+                <Card className="border-blue-200 bg-blue-50/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Info className="h-5 w-5 text-blue-500" />
+                      AI Search Result Source
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-gray-600 whitespace-pre-wrap font-mono p-4 bg-white rounded-md border">
+                      {aiSource}
                     </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="monthlyRent">Monthly Rent</Label>
-                    <Input
-                      id="monthlyRent"
-                      type="text"
-                      inputMode="decimal"
-                      value={inputs.monthlyRent}
-                      onChange={(e) => handleInputChange('monthlyRent', e.target.value)}
-                      onBlur={(e) => handleInputBlur('monthlyRent', e.target.value)}
-                      className="text-lg"
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Market Assumptions */}
-              <Card className="lg:col-span-2 backdrop-blur-sm bg-white/90 border-white/60 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl">
-                    <TrendingUp className="h-5 w-5" />
-                    Market Assumptions
-                  </CardTitle>
-                  <CardDescription>
-                    Annual growth rates and investment returns
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <div className="space-y-2">
-                      <Label htmlFor="homeAppreciation">Home Appreciation (%/year)</Label>
+                  </CardContent>
+                </Card>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <Home className="h-5 w-5" />
+                      Home Purchase Details
+                    </CardTitle>
+                    <CardDescription>
+                      Enter details about the property and mortgage
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-1">
+                      <Label htmlFor="homePrice">Home Price</Label>
                       <Input
-                        id="homeAppreciation"
+                        id="homePrice"
+                        name="homePrice"
+                        value={inputs.homePrice}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         type="text"
                         inputMode="decimal"
+                        className={cn(highlightedFields.has('homePrice') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <Label>Down Payment</Label>
+                      <Tabs value={inputs.downPaymentType} onValueChange={(value) => handleInputChange({ target: { name: 'downPaymentType', value } })}>
+                        <TabsList className="grid w-full grid-cols-2">
+                          <TabsTrigger value="percentage">Percentage</TabsTrigger>
+                          <TabsTrigger value="amount">Amount</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="percentage" className="pt-2">
+                          <Label htmlFor="downPaymentPercentage">Down Payment (%)</Label>
+                          <Input
+                            id="downPaymentPercentage"
+                            name="downPaymentPercentage"
+                            value={inputs.downPaymentPercentage}
+                            onChange={handleInputChange}
+                            onBlur={handleInputBlur}
+                            type="text"
+                            inputMode="decimal"
+                            className={cn(highlightedFields.has('downPaymentPercentage') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                          />
+                        </TabsContent>
+                        <TabsContent value="amount" className="pt-2">
+                          <Label htmlFor="downPaymentAmount">Down Payment ($)</Label>
+                          <Input
+                            id="downPaymentAmount"
+                            name="downPaymentAmount"
+                            value={inputs.downPaymentAmount}
+                            onChange={handleInputChange}
+                            onBlur={handleInputBlur}
+                            type="text"
+                            inputMode="decimal"
+                            className={cn(highlightedFields.has('downPaymentAmount') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                          />
+                        </TabsContent>
+                      </Tabs>
+
+                      <div className="text-sm text-muted-foreground">
+                        Amount: {formatCurrency(downPaymentAmount)}
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="mortgageInterestRate">Mortgage Interest Rate (%)</Label>
+                      <Input
+                        id="mortgageInterestRate"
+                        name="mortgageInterestRate"
+                        value={inputs.mortgageInterestRate}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('mortgageInterestRate') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="timeHorizon">Time Horizon (years)</Label>
+                      <Input
+                        id="timeHorizon"
+                        name="timeHorizon"
+                        value={inputs.timeHorizon}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('timeHorizon') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2 text-xl">
+                      <DollarSign className="h-5 w-5" />
+                      Costs & Expenses
+                    </CardTitle>
+                    <CardDescription>
+                      Additional costs as percentage of home price
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-1">
+                      <Label htmlFor="closingCosts">Closing Costs (%)</Label>
+                      <Input
+                        id="closingCosts"
+                        name="closingCosts"
+                        value={inputs.closingCosts}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('closingCosts') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="annualMaintenanceCosts">Annual Maintenance Costs (%)</Label>
+                      <Input
+                        id="annualMaintenanceCosts"
+                        name="annualMaintenanceCosts"
+                        value={inputs.annualMaintenanceCosts}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('annualMaintenanceCosts') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="annualOwnershipCosts">Annual Prop. Taxes & Insurance (%)</Label>
+                      <Input
+                        id="annualOwnershipCosts"
+                        name="annualOwnershipCosts"
+                        value={inputs.annualOwnershipCosts}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('annualOwnershipCosts') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <Label htmlFor="monthlyRent">Monthly Rent</Label>
+                      <Input
+                        id="monthlyRent"
+                        name="monthlyRent"
+                        value={inputs.monthlyRent}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('monthlyRent') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <Label htmlFor="homeAppreciationRate">Home Appreciation Rate (%)</Label>
+                      <Input
+                        id="homeAppreciationRate"
+                        name="homeAppreciationRate"
                         value={inputs.homeAppreciationRate}
-                        onChange={(e) => handleInputChange('homeAppreciationRate', e.target.value)}
-                        onBlur={(e) => handleInputBlur('homeAppreciationRate', e.target.value)}
-                        className="text-lg"
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('homeAppreciationRate') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="rentIncrease">Rent Increase (%/year)</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="rentIncreaseRate">Rent Increase Rate (%)</Label>
                       <Input
-                        id="rentIncrease"
-                        type="text"
-                        inputMode="decimal"
+                        id="rentIncreaseRate"
+                        name="rentIncreaseRate"
                         value={inputs.rentIncreaseRate}
-                        onChange={(e) => handleInputChange('rentIncreaseRate', e.target.value)}
-                        onBlur={(e) => handleInputBlur('rentIncreaseRate', e.target.value)}
-                        className="text-lg"
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        type="text"
+                        inputMode="decimal"
+                        className={cn(highlightedFields.has('rentIncreaseRate') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="investmentReturn">Investment Return (%/year)</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="investmentReturnRate">Investment Return Rate (%)</Label>
                       <Input
-                        id="investmentReturn"
+                        id="investmentReturnRate"
+                        name="investmentReturnRate"
+                        value={inputs.investmentReturnRate}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
                         type="text"
                         inputMode="decimal"
-                        value={inputs.investmentReturnRate}
-                        onChange={(e) => handleInputChange('investmentReturnRate', e.target.value)}
-                        onBlur={(e) => handleInputBlur('investmentReturnRate', e.target.value)}
-                        className="text-lg"
+                        className={cn(highlightedFields.has('investmentReturnRate') && 'ring-2 ring-offset-2 ring-blue-500 transition-shadow duration-300')}
                       />
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
@@ -418,11 +434,6 @@ const BuyOrRentCalculator = () => {
                   </div>
                 </CardContent>
               </Card>
-
-              {/* AI Summary */}
-              <div className="lg:col-span-2">
-                <AiSummary inputs={inputs} results={results} />
-              </div>
 
               {/* Monthly Payments */}
               <Card className="backdrop-blur-sm bg-white/90 border-white/60 shadow-lg">
@@ -561,4 +572,4 @@ const BuyOrRentCalculator = () => {
   );
 };
 
-export default BuyOrRentCalculator;
+export default BuyRentCalculator;

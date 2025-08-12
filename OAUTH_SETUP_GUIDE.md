@@ -174,3 +174,4 @@ If you encounter issues:
 **Remember**: OAuth setup is optional - the app works in guest mode too! 🎉
 
 
+

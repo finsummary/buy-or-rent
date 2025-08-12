@@ -14,6 +14,22 @@ export interface CalculatorInputs {
   investmentReturnRate: string; // % per year
 }
 
+export type NumericCalculatorInputs = Omit<CalculatorInputs, 'downPaymentType' | 'homePrice' | 'downPaymentPercentage' | 'downPaymentAmount' | 'mortgageInterestRate' | 'timeHorizon' | 'closingCosts' | 'annualMaintenanceCosts' | 'annualOwnershipCosts' | 'monthlyRent' | 'homeAppreciationRate' | 'rentIncreaseRate' | 'investmentReturnRate'> & {
+  homePrice: number;
+  downPaymentPercentage: number;
+  downPaymentAmount: number;
+  mortgageInterestRate: number;
+  timeHorizon: number;
+  closingCosts: number;
+  annualMaintenanceCosts: number;
+  annualOwnershipCosts: number;
+  monthlyRent: number;
+  homeAppreciationRate: number;
+  rentIncreaseRate: number;
+  investmentReturnRate: number;
+  downPaymentType: 'percentage' | 'amount';
+};
+
 export interface YearlyData {
   year: number;
   propertyValue: number;

@@ -3,7 +3,7 @@ import { CalculatorInputs, CalculationResults, YearlyData } from '@/types/calcul
 export function calculateMonthlyMortgagePayment(
   loanAmount: number,
   annualInterestRate: number,
-  loanTermYears: number = 30
+  loanTermYears: number
 ): number {
   const monthlyRate = annualInterestRate / 100 / 12;
   const numberOfPayments = loanTermYears * 12;
@@ -48,7 +48,8 @@ export function calculateBuyVsRent(inputs: {
   // Calculate monthly mortgage payment
   const monthlyMortgagePayment = calculateMonthlyMortgagePayment(
     loanAmount, 
-    inputs.mortgageInterestRate
+    inputs.mortgageInterestRate,
+    inputs.timeHorizon
   );
   
   // Calculate monthly ownership costs
@@ -106,19 +107,20 @@ export function calculateBuyVsRent(inputs: {
     
     // Calculate homeowner's equity (property value minus remaining loan balance)
     const monthsElapsed = year * 12;
-    const remainingPayments = 30 * 12 - monthsElapsed; // Assuming 30-year mortgage
+    const totalPayments = inputs.timeHorizon * 12;
+    const remainingPayments = totalPayments - monthsElapsed;
     let remainingLoanBalance = 0;
     
     if (remainingPayments > 0 && inputs.mortgageInterestRate > 0) {
       const monthlyRate = inputs.mortgageInterestRate / 100 / 12;
       remainingLoanBalance = loanAmount * 
-        (Math.pow(1 + monthlyRate, 30 * 12) - Math.pow(1 + monthlyRate, monthsElapsed)) /
-        (Math.pow(1 + monthlyRate, 30 * 12) - 1);
+        (Math.pow(1 + monthlyRate, totalPayments) - Math.pow(1 + monthlyRate, monthsElapsed)) /
+        (Math.pow(1 + monthlyRate, totalPayments) - 1);
     }
     
-    // Homeowner equity: property value minus remaining loan balance minus closing costs (expense)
-    // After year 0, closing costs are treated as sunk costs, not recoverable investment
-    const homeownerEquity = Math.max(0, currentPropertyValue - remainingLoanBalance - (year > 0 ? closingCosts : 0));
+    // Homeowner equity: property value minus remaining loan balance
+    const homeownerEquity = Math.max(0, currentPropertyValue - remainingLoanBalance);
+    
     const totalRenterInvestment = downPaymentInvestment + accumulatedSavings;
     
     yearlyData.push({
@@ -140,9 +142,8 @@ export function calculateBuyVsRent(inputs: {
   const finalAccumulatedSavings = accumulatedSavings;
   const totalRenterInvestment = finalDownPaymentInvestment + finalAccumulatedSavings;
   
-  // Final homeowner equity (subtract selling costs and closing costs as they're expenses)
-  const sellingCosts = finalPropertyValue * 0.06;
-  const finalHomeownerEquity = Math.max(0, finalPropertyValue - sellingCosts - closingCosts);
+  // Final homeowner equity from the last year's calculation
+  const finalHomeownerEquity = yearlyData[yearlyData.length - 1].homeownerEquity;
   
   // Recommendation
   const recommendation: 'Buy' | 'Rent' = finalHomeownerEquity > totalRenterInvestment ? 'Buy' : 'Rent';
@@ -152,6 +153,7 @@ export function calculateBuyVsRent(inputs: {
     monthlyMortgagePayment,
     ownerMonthlyPayment,
     finalPropertyValue,
+    finalHomeownerEquity,
     finalDownPaymentInvestment,
     finalAccumulatedSavings,
     totalRenterInvestment,

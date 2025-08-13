@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Calculator, Home, DollarSign, TrendingUp, BarChart3, User, Info } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import Link from 'next/link';
 
 
 import { CalculatorInputs, defaultInputs } from '@/types/calculator';
@@ -166,9 +167,18 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
           </div>
         </header>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="h-auto flex flex-wrap justify-center mb-6">
-            <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
+        <Card className="mb-8 bg-white/70 backdrop-blur-sm border-gray-200 shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">Welcome to Your Financial Decision-Making Hub</h2>
+            <p className="text-gray-600 leading-relaxed">
+              Deciding whether to buy a home or rent is one of the biggest financial choices you'll make. It's not just about comparing a mortgage payment to a rent check; it's about understanding the long-term implications of appreciation, equity, maintenance costs, and investment opportunities. This calculator is designed to go beyond the surface-level numbers, providing you with a comprehensive, side-by-side comparison to help you make an informed and confident decision that aligns with your financial goals.
+            </p>
+          </CardContent>
+        </Card>
+ 
+         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+           <TabsList className="h-auto flex flex-wrap justify-center mb-6">
+             <TabsTrigger value="inputs">Input Parameters</TabsTrigger>
             <TabsTrigger value="results">Results & Analysis</TabsTrigger>
             <TabsTrigger value="chart">Comparison Chart</TabsTrigger>
             <TabsTrigger value="table">Yearly Breakdown</TabsTrigger>
@@ -181,6 +191,15 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
           <TabsContent value="inputs">
             <div className="space-y-6">
               <WhatIfScenario inputs={inputs} onInputsChange={handleAiUpdate} />
+              <div className="text-center p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm text-blue-700">
+                      Confused about the inputs? {" "}
+                      <Link href="/guide" className="font-semibold underline hover:text-blue-800 transition-colors">
+                          Check out our detailed guide
+                      </Link>
+                      {" "} to understand what each field means.
+                  </p>
+              </div>
               {aiSource && (
                 <Card className="border-blue-200 bg-blue-50/50">
                   <CardHeader>
@@ -573,6 +592,18 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
             />
           </TabsContent>
         </Tabs>
+
+        <Card className="mt-8 bg-white/70 backdrop-blur-sm border-gray-200 shadow-sm">
+          <CardContent className="p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">Understanding Your Results</h2>
+            <p className="text-gray-600 leading-relaxed mb-4">
+              The chart and tables above illustrate the potential long-term financial outcomes of buying versus renting. <strong>Homeowner's Equity</strong> represents the value of your home minus the outstanding mortgage balance, a key component of wealth building. <strong>Renter's Investment</strong> shows how much your money could have grown if, instead of buying a home, you rented and invested the difference in costs (like a down payment and lower monthly expenses) in the stock market.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              There is no single "right" answer. The better choice depends on your time horizon, local market conditions, and personal financial discipline. Use these results as a guide, and consider adjusting the assumptions to see how different scenarios could play out.
+            </p>
+          </CardContent>
+        </Card>
 
         <div id="faq">
           <FaqSection />

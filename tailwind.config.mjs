@@ -8,6 +8,42 @@ const config = {
   ],
   theme: {
     extend: {
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            '--tw-prose-body': theme('colors.slate[700]'),
+            '--tw-prose-headings': theme('colors.slate[800]'),
+            p: {
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
+            },
+            h2: {
+              marginTop: '2em',
+              marginBottom: '1em',
+            },
+            h3: {
+              marginTop: '1.75em',
+              marginBottom: '0.75em',
+            },
+          },
+        },
+        xl: {
+          css: {
+            p: {
+              marginTop: '1.25em',
+              marginBottom: '1.25em',
+            },
+            h2: {
+              marginTop: '2em',
+              marginBottom: '1em',
+            },
+            h3: {
+              marginTop: '1.75em',
+              marginBottom: '0.75em',
+            },
+          },
+        },
+      }),
       fontFamily: {
         sans: ["var(--font-sans)"],
       },
@@ -32,7 +68,7 @@ const config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 }
 
 module.exports = config

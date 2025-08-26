@@ -59,3 +59,39 @@
     color: hsl(var(--foreground));
   }
 }
+
+@layer base {
+  .prose h2, .prose-xl h2 {
+    margin-top: 3em;
+    margin-bottom: 1.5em;
+    font-size: 1.875rem; /* 30px */
+    font-weight: 700;
+  }
+  .prose h3, .prose-xl h3 {
+    margin-top: 2.5em;
+    margin-bottom: 1em;
+    font-size: 1.5rem; /* 24px */
+    font-weight: 600;
+  }
+  .prose p, .prose-xl p {
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+  }
+  .prose table, .prose-xl table {
+    width: 100%;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    border-collapse: collapse;
+  }
+  .prose th, .prose-xl th, .prose td, .prose-xl td {
+    border: 1px solid theme('colors.slate.300');
+    padding: 0.75em 1em;
+  }
+  .prose th, .prose-xl th {
+    background-color: theme('colors.slate.100');
+    font-weight: 600;
+  }
+  .prose tr:nth-child(even), .prose-xl tr:nth-child(even) {
+    background-color: theme('colors.slate.50');
+  }
+}

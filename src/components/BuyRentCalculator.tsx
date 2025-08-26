@@ -30,6 +30,18 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
   const [activeTab, setActiveTab] = useState('inputs');
   const [highlightedFields, setHighlightedFields] = useState<Set<string>>(new Set());
   const [aiSource, setAiSource] = useState<string | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const formatCurrencyForClient = (amount: number) => {
+    if (!isClient) {
+      return Math.round(amount).toString();
+    }
+    return formatCurrency(amount);
+  };
 
   // Calculate results
   const results = useMemo(() => {
@@ -147,29 +159,11 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-6 sm:px-6 lg:px-8 max-w-7xl">
-        {/* Header */}
-        <header className="flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
-          <div className="flex items-center gap-2 text-2xl font-bold text-blue-600">
-            <Home className="h-6 w-6" />
-            <span>BuyOrRent.io</span>
-          </div>
-          <div className="flex-grow text-center">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center justify-center gap-2">
-              <Calculator className="h-7 w-7 sm:h-8 sm:w-8" />
-              Buy vs Rent Calculator
-            </h1>
-            <p className="text-base sm:text-lg text-muted-foreground mt-1">
-              Make informed decisions about homeownership vs renting
-            </p>
-          </div>
-          <div className="flex-shrink-0">
-            <UserMenu />
-          </div>
-        </header>
+        {/* Header content removed as it is now in the global Header component */}
 
         <Card className="mb-8 bg-white/70 backdrop-blur-sm border-gray-200 shadow-sm">
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold text-gray-800 mb-3">Welcome to Your Financial Decision-Making Hub</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-3">Buy or Rent Calculator with AI Assistant</h2>
             <p className="text-gray-600 leading-relaxed">
               Deciding whether to buy a home or rent is one of the biggest financial choices you'll make. It's not just about comparing a mortgage payment to a rent check; it's about understanding the long-term implications of appreciation, equity, maintenance costs, and investment opportunities. This calculator is designed to go beyond the surface-level numbers, providing you with a comprehensive, side-by-side comparison to help you make an informed and confident decision that aligns with your financial goals.
             </p>
@@ -277,7 +271,7 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                       </Tabs>
 
                       <div className="text-sm text-muted-foreground">
-                        Amount: {formatCurrency(downPaymentAmount)}
+                        Amount: {formatCurrencyForClient(downPaymentAmount)}
                       </div>
                     </div>
 
@@ -443,20 +437,20 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                   <div className="flex flex-col sm:flex-row justify-center gap-6 mb-6">
                     <div className="text-center p-6 bg-green-50 rounded-xl border-2 border-green-200">
                       <div className="text-2xl font-bold text-green-600">
-                        {formatCurrency(results.finalPropertyValue)}
+                        {formatCurrencyForClient(results.finalPropertyValue)}
                       </div>
                       <div className="text-sm text-muted-foreground mt-2">Final Property Value</div>
                     </div>
                     <div className="text-center p-6 bg-blue-50 rounded-xl border-2 border-blue-200">
                       <div className="text-2xl font-bold text-blue-600">
-                        {formatCurrency(results.totalRenterInvestment)}
+                        {formatCurrencyForClient(results.totalRenterInvestment)}
                       </div>
                       <div className="text-sm text-muted-foreground mt-2">Total Renter Investment</div>
                     </div>
                   </div>
                   <div className="text-center">
                     <div className="text-xl font-semibold mb-2">
-                      Difference: {formatCurrency(results.difference)}
+                      Difference: {formatCurrencyForClient(results.difference)}
                     </div>
                     <div className="text-lg text-muted-foreground">
                       {results.recommendation === 'Buy' ? 'in favor of buying' : 'in favor of renting'}
@@ -473,20 +467,20 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Mortgage Payment:</span>
-                    <span className="font-medium">{formatCurrency(results.monthlyMortgagePayment)}</span>
+                    <span className="font-medium">{formatCurrencyForClient(results.monthlyMortgagePayment)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Owner&apos;s Total Monthly:</span>
-                    <span className="font-medium">{formatCurrency(results.ownerMonthlyPayment)}</span>
+                    <span className="font-medium">{formatCurrencyForClient(results.ownerMonthlyPayment)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Current Rent:</span>
-                    <span className="font-medium">{formatCurrency(Number(inputs.monthlyRent))}</span>
+                    <span className="font-medium">{formatCurrencyForClient(Number(inputs.monthlyRent))}</span>
                   </div>
                   <div className="border-t pt-4 flex justify-between items-center p-3 bg-gradient-to-r from-indigo-50 to-blue-50 rounded-lg">
                     <span className="font-semibold">Monthly Difference:</span>
                     <span className={`font-bold ${results.ownerMonthlyPayment > Number(inputs.monthlyRent) ? 'text-red-600' : 'text-green-600'}`}>
-                      {formatCurrency(Math.abs(results.ownerMonthlyPayment - Number(inputs.monthlyRent)))}
+                      {formatCurrencyForClient(Math.abs(results.ownerMonthlyPayment - Number(inputs.monthlyRent)))}
                     </span>
                   </div>
                 </CardContent>
@@ -500,20 +494,20 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                 <CardContent className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Down Payment + Closing:</span>
-                    <span className="font-medium">{formatCurrency(downPaymentAmount + (Number(inputs.homePrice) * (Number(inputs.closingCosts) / 100)))}</span>
+                    <span className="font-medium">{formatCurrencyForClient(downPaymentAmount + (Number(inputs.homePrice) * (Number(inputs.closingCosts) / 100)))}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Down Payment Investment:</span>
-                    <span className="font-medium">{formatCurrency(results.finalDownPaymentInvestment)}</span>
+                    <span className="font-medium">{formatCurrencyForClient(results.finalDownPaymentInvestment)}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
                     <span>Accumulated Savings:</span>
-                    <span className="font-medium">{formatCurrency(results.finalAccumulatedSavings)}</span>
+                    <span className="font-medium">{formatCurrencyForClient(results.finalAccumulatedSavings)}</span>
                   </div>
                   <div className="border-t pt-4 flex justify-between items-center p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg">
                     <span className="font-semibold">Total Renter Investment:</span>
                     <span className="font-bold text-green-600">
-                      {formatCurrency(results.totalRenterInvestment)}
+                      {formatCurrencyForClient(results.totalRenterInvestment)}
                     </span>
                   </div>
                 </CardContent>
@@ -548,7 +542,7 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
                         tickFormatter={(value) => `${Math.round(value / 1000)}K`}
                       />
                       <Tooltip 
-                        formatter={(value: number, name: string) => [formatCurrency(value), name]}
+                        formatter={(value: number, name: string) => [formatCurrencyForClient(value), name]}
                         labelStyle={{ color: '#374151' }}
                         contentStyle={{ 
                           backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -609,7 +603,7 @@ export function BuyRentCalculator({ initialInputs }: { initialInputs?: Partial<C
           <FaqSection />
         </div>
       </div>
-      <Footer />
+      {/* Footer removed from here as it's in the main layout */}
     </div>
   );
 };

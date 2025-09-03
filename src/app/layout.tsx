@@ -5,6 +5,8 @@ import "./globals.css";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { Suspense } from "react";
 import { cn } from "@/lib/utils";
+import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -78,9 +80,11 @@ export default function RootLayout({
           inter.variable
         )}
       >
+        <Header />
+        <div className="flex-grow">{children}</div>
+        <Footer />
         <Suspense>
           <GoogleAnalytics />
-          {children}
         </Suspense>
       </body>
     </html>
